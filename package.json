@@ -1,0 +1,63 @@
+{
+  "name": "commandp-work",
+  "version": "0.0.1",
+  "description": "React, Redux",
+  "scripts": {
+    "start": "babel-node server.js",
+    "build": "rimraf dist && NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
+    "lint": "eslint src; exit 0",
+    "clean": "rimraf dist"
+  },
+  "repository": {
+    "type": "git",
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "redux",
+    "reduxjs",
+    "react-router",
+    "bootstrap",
+    "webpack",
+    "flux",
+    "dashboard",
+    "boilerplate"
+  ],
+  "author": "SDLyu",
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^0.10.4",
+    "body-parser": "^1.14.1",
+    "classnames": "^2.2.0",
+    "express": "^4.13.3",
+    "fixed-data-table": "^0.5.0",
+    "history": "^1.13.0",
+    "isomorphic-fetch": "^2.1.1",
+    "lodash": "^3.10.1",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3",
+    "react-redux": "^4.0.0",
+    "react-router": "^1.0.0",
+    "redux": "^3.0.4",
+    "redux-logger": "^2.0.4",
+    "redux-thunk": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.29",
+    "babel-core": "^5.8.33",
+    "babel-loader": "^5.3.2",
+    "webpack": "^1.12.4",
+    "style-loader": "^0.13.0",
+    "raw-loader": "^0.5.1",
+    "file-loader": "^0.8.4",
+    "url-loader": "^0.5.6",
+    "rimraf": "^2.4.3",
+    "webpack-dev-middleware": "^1.2.0",
+    "webpack-hot-middleware": "^2.4.1",
+    "stats-webpack-plugin": "^0.2.2",
+    "babel-eslint": "^4.1.5",
+    "eslint": "^1.9.0",
+    "eslint-config-airbnb": "1.0.0",
+    "eslint-plugin-react": "^3.8.0"
+  }
+}
