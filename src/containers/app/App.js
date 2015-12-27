@@ -24,7 +24,7 @@ class App extends Component {
         const {user} = this.props;
         return (
             <div>
-                <Header user={user} handleLogout={()=>this.handleLogout()}/>
+                <Header user={user} handleLogout={() => this.handleLogout()}/>
                 <div className="appContent">
                     {this.props.children}
                 </div>
