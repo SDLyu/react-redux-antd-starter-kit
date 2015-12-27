@@ -1,63 +1,83 @@
 import React, {Component, PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Row, Col, Panel} from 'react-bootstrap';
+import {notification, Form, Input, Button, Icon} from 'antd';
 
-import {login} from '../../actions/auth';
+import {register} from '../../actions/auth';
 
 import './register.css';
 
 class Register extends Component {
     constructor(props) {
         super(props);
-        this.handleLogin = this.handleLogin.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
+        let errors = nextProps.registerErrors;
+        const isRegistering = nextProps.registering;
+        const user = nextProps.user
+
+
+        if (errors) {
+            errors.forEach((errorMessage) => {
+                notification.error({
+                    message: 'Register Fail',
+                    description: errorMessage
+                });
+            });
+        }
+
+        if (!isRegistering && !errors)  {
+            notification.success({
+                message: 'Register Success',
+                description: 'Welcome ' + user.username
+            });
+        }
+
         if (nextProps.user) {
-            // logged in, let's show home
             this.context.history.replaceState(null, '/');
         }
     }
 
-    handleLogin(event) {
+    handleSubmit(event) {
         event.preventDefault();
-        const username = this.refs.username;
-        const password = this.refs.password;
-        this.props.dispatch(login(username.value, password.value));
-        username.value = '';
+
+        const {actions} = this.props;
+        const accountname = this.refs.accountname.refs.input;
+        const email = this.refs.email.refs.input;
+        const password = this.refs.password.refs.input;
+
+        actions.register(accountname.value, email.value, password.value);
+
+        accountname.value = '';
         password.value = '';
+        email.value = '';
     }
 
     render() {
-        const {user, loginError} = this.props;
+        const FormItem = Form.Item;
+        const {user, registering, registerErrors} = this.props;
+
         return (
             <div className="container">
                 <Row>
                     <Col sm={8} smOffset={2} md={4} mdOffset={4}>
-                        <Panel header="Please Register" footer="Or Login">
-                            <form className="form-signin">
-                                <div className="input-group">
-                                    <span className="input-group-addon"><i className="fa fa-cloud"/></span>
-                                    <input type="text" ref="accountname" className="form-control" placeholder="Account name" required autoFocus />
-                                </div>
-                                
-                                <div className="input-group">
-                                    <span className="input-group-addon"><i className="fa fa-envelope"/></span>
-                                    <input type="text" ref="email" className="form-control" placeholder="E-mail" required />
-                                </div>
-
-                                <div className="input-group">
-                                    <span className="input-group-addon"><i className="fa fa-lock"/></span>
-                                    <input type="password" ref="password" className="form-control" placeholder="Password" required />
-                                </div>
-                                {
-                                    !user && loginError &&
-                                    <div className="alert alert-danger">
-                                        {loginError.message}. Hint: use admin/password to log in.
-                                    </div>
-                                }
-                                <button className="btn btn-primary btn-block" onClick={this.handleLogin}><i className="fa fa-sign-in"/>{' '}Register</button>
-                            </form>
+                        <Panel header="Please Register">
+                            <Form horizontal onSubmit={(event) => this.handleSubmit(event)}>
+                                <FormItem label="Account：" labelCol={{span: 6}} wrapperCol={{span: 16}} required>
+                                    <Input type="text" ref="accountname" id="accountname" name="accountname" placeholder="Account Name" />
+                                </FormItem>
+                                <FormItem label="Password：" labelCol={{span: 6}} wrapperCol={{span: 16}} required>
+                                    <Input type="password" ref="password" id="password" name="password" placeholder="Password" />
+                                </FormItem>
+                                <FormItem label="E-mail：" labelCol={{span: 6}} wrapperCol={{span: 16}} required>
+                                    <Input type="email" ref="email" id="email" name="email" placeholder="E-mail" />
+                                </FormItem>
+                                <Button type="primary" htmlType="submit" size="large" loading={registering}>
+                                    Register
+                                </Button>
+                            </Form>
                         </Panel>
                     </Col>
                 </Row>
@@ -72,20 +92,23 @@ Register.contextTypes = {
 };
 
 Register.propTypes = {
-    user: PropTypes.string,
-    loginError: PropTypes.object,
-    dispatch: PropTypes.func.isRequired
+    user: PropTypes.object,
+    registerErrors: PropTypes.array,
 };
 
 function mapStateToProps(state) {
     const {auth} = state;
     if (auth) {
-        return {user: auth.user, loginError: auth.loginError};
+        return {user: auth.user, registering: auth.registering, registerErrors: auth.registerErrors};
     }
 
     return {user: null};
 }
 
-export default connect(mapStateToProps)(Register);
+function mapDispatchToProps(dispatch) {
+    return {actions: bindActionCreators({register}, dispatch)};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
 
 

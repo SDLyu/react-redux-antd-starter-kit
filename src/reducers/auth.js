@@ -1,56 +1,70 @@
 import {
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
-  LOGOUT_REQUEST,
-  LOGOUT_SUCCESS,
-  LOGOUT_FAILURE,
+    REGISTER_REQUEST,
+    REGISTER_SUCCESS,
+    REGISTER_FAILURE,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    LOGOUT_SUCCESS,
+    EDIT_PROFILE_REQUEST,
+    EDIT_PROFILE_SUCCESS,
+    EDIT_PROFILE_FAILURE,
 } from '../actions/auth';
 
 const initialState = {
-  // user: null,
-  // password: null,
-  // userRole: null,
-  // loggingIn: false,
-  // loggingOut: false,
-  // loginError: null,
+    user: null,
+    registering: false,
+    loggingIn: false,
+    loggingOut: false,
+    editingProfile: false,
+    registersErrors: null,
+    loginErrors: null,
+    editingProfileErrors: null,
 };
 
 export default function auth(state = initialState, action = {}) {
-  switch (action.type) {
-  case LOGIN_REQUEST:
-    return Object.assign({}, state, {loggingIn: true});
-  case LOGIN_SUCCESS:
-    return Object.assign({}, state, {
-      loggingIn: false, user: action.user, role: action.role});
-  case LOGIN_FAILURE:
-    return {
-      ...state,
-      loggingIn: false,
-      user: null,
-      role: null,
-      loginError: action.error
-    };
-  case LOGOUT_REQUEST:
-    return {
-      ...state,
-      loggingOut: true
-    };
-  case LOGOUT_SUCCESS:
-    return {
-      ...state,
-      loggingOut: false,
-      user: null,
-      userRole: null,
-      loginError: null
-    };
-  case LOGOUT_FAILURE:
-    return {
-      ...state,
-      loggingOut: false,
-      logoutError: action.error
-    };
-  default:
-    return state;
-  }
+    switch (action.type) {
+        case REGISTER_REQUEST:
+            return Object.assign({}, initialState, {registering: true});
+        case REGISTER_SUCCESS:
+            return Object.assign({}, state, {user: action.user, registering: false, registerErrors: null});
+        case REGISTER_FAILURE:
+            return {
+                ...state,
+                registering: false,
+                user: null,
+                registerErrors: action.errors
+            };
+
+        case LOGIN_REQUEST:
+            return Object.assign({}, initialState, {loggingIn: true});
+        case LOGIN_SUCCESS:
+            return Object.assign({}, state, {user: action.user, loggingIn: false, loginErrors: null});
+        case LOGIN_FAILURE:
+            return {
+                ...state,
+                loggingIn: false,
+                user: null,
+                loginErrors: action.errors
+            };
+        case LOGOUT_SUCCESS:
+            return {
+                ...state,
+                loggingOut: false,
+                user: null,
+                loginErrors: null
+            };
+        case EDIT_PROFILE_REQUEST:
+            return Object.assign({}, state, {editingProfile: true, editProfileErrors: null});
+        case EDIT_PROFILE_SUCCESS:
+            return Object.assign({}, state, {user: action.user, editingProfile: false, editProfileErrors: null});
+        case EDIT_PROFILE_FAILURE:
+            return {
+                ...state,
+                editingProfile: false,
+                editProfileErrors: action.errors
+            };
+        default:
+            return state;
+    }
 }

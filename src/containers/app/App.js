@@ -1,11 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import { Affix , Row, Col } from 'antd';
-
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {Affix , Row, Col} from 'antd';
+
 import Header from '../../components/header/Header';
 import Footer from '../../components/footer/Footer';
 
-import {logout} from '../../actions/auth';
+import {fetchProfile, logout} from '../../actions/auth';
 
 import './app.css';
 
@@ -14,17 +15,17 @@ class App extends Component {
         super(props);
     }
 
-    handleLogout() {
-        const { user } = this.props;
-        this.props.dispatch(logout(user));
-        this.context.history.pushState(null, '/login');
+    componentWillMount() {
+        const {actions} = this.props;
+        actions.fetchProfile();
     }
 
     render() {
-        const {user} = this.props;
+        const {user, actions} = this.props;
+
         return (
             <div>
-                <Header user={user} handleLogout={() => this.handleLogout()}/>
+                <Header user={user} actions={actions}/>
                 <div className="appContent">
                     {this.props.children}
                 </div>
@@ -34,9 +35,8 @@ class App extends Component {
 }
 
 App.propTypes = {
-    user: PropTypes.string,
+    user: PropTypes.object,
     children: PropTypes.node.isRequired,
-    dispatch: PropTypes.func.isRequired
 };
 
 App.contextTypes = {
@@ -47,10 +47,12 @@ App.contextTypes = {
 const mapStateToProps = (state) => {
     const {auth} = state;
     return {
-        user: auth ? auth.user : null
+        user: auth ? auth.user : null,
     };
 };
 
-export default connect(
-    mapStateToProps
-)(App);
+function mapDispatchToProps(dispatch) {
+    return {actions: bindActionCreators({fetchProfile, logout}, dispatch)};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

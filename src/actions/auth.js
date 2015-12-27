@@ -1,123 +1,244 @@
 import 'isomorphic-fetch';
-import {checkStatus, parseJSON} from './utils';
+import _ from 'lodash';
+
+import {cookies, checkStatus, parseJSON, flattenObject} from './utils';
+
+export const FETCHPROFILE_REQUEST = 'FETCHPROFILE_REQUEST';
+export const FETCHPROFILE_SUCCESS = 'FETCHPROFILE_SUCCESS';
+
+export const REGISTER_REQUEST = 'REGISTER_REQUEST';
+export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+export const REGISTER_FAILURE = 'REGISTER_FAILURE';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 
-export const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
-export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
+
+export const EDIT_PROFILE_REQUEST = 'EDIT_PROFILE_REQUEST';
+export const EDIT_PROFILE_SUCCESS = 'EDIT_PROFILE_SUCCESS';
+export const EDIT_PROFILE_FAILURE = 'EDIT_PROFILE_FAILURE';
+
+function saveToken(token){
+    if (token === undefined) return;
+
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    cookies.set({name: 'token', value: token, expires});
+}
+
+export function fetchProfile() {
+    let token = cookies.get('token');
+
+    if (token === undefined) {
+        return {type: 'TOKEN_NOT_FOUND'};
+    }
+    return dispatch => {
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/my?token=' + token, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(loginSuccess(json)));
+    }
+}
+
+function registerRequest() {
+    return {
+        type: REGISTER_REQUEST,
+    };
+}
+
+function registerSuccess(res) {
+    saveToken(res.access_token);
+
+    return {
+        type: REGISTER_SUCCESS,
+        user: res.user,
+    };
+}
+
+function registerFailure(errors) {
+    let flattenErrors = flattenObject(errors);
+    let errorMessages = [];
+
+    for (let errorKey in flattenErrors) {
+        let key = errorKey.split('.')[0];
+        let message = _.capitalize(key + ' ' + flattenErrors[errorKey]);
+
+        errorMessages.push(message);
+    }
+
+    return {
+        type: REGISTER_FAILURE,
+        errors: errorMessages
+    };
+}
+
+export function register(username, email, password) {
+    return dispatch => {
+        dispatch(registerRequest());
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/register', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+            })
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(registerSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(registerFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(registerFailure(json.errors));
+                });
+            }
+         });
+    };
+}
 
 function loginRequest(user) {
-  return {
-    type: LOGIN_REQUEST,
-    user: user
-  };
+    return {
+        type: LOGIN_REQUEST,
+    };
 }
 
-function loginSuccess(user, payload) {
-  return {
-    type: LOGIN_SUCCESS,
-    user: payload.user,
-    role: payload.role
-  };
+function loginSuccess(res) {
+    saveToken(res.access_token);
+
+    return {
+        type: LOGIN_SUCCESS,
+        user: res.user
+    };
 }
 
-function loginFailure(user, error) {
-  return {
-    type: LOGIN_FAILURE,
-    user: user,
-    error: error
-  };
+function loginFailure(errors) {
+
+    return {
+        type: LOGIN_FAILURE,
+        errors: errors
+    };
 }
 
-export function login(user, password) {
-  return dispatch => {
-    dispatch(loginRequest(user));
+export function login(username, password) {
+    return dispatch => {
+        dispatch(loginRequest());
 
-    return fetch('/api/login', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user: user,
-        password: password,
-      })
-    }).then(checkStatus)
-      .then(parseJSON)
-      .then(json => dispatch(loginSuccess(user, json)))
-      .catch((error) => {
-        const response = error.response;
-        if (response === undefined) {
-          dispatch(loginFailure(user, error));
-        } else {
-          parseJSON(response)
-            .then( (json) => {
-              error.status = response.status;
-              error.statusText = response.statusText;
-              error.message = json.message;
-              dispatch(loginFailure(user, error));
-            });
-        }
-      });
-  };
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/login', {
+            method: 'put',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            })
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(loginSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(loginFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(loginFailure(json.errors));
+                });
+            }
+         });
+    };
 }
 
-function logoutRequest(user) {
-  return {
-    type: LOGOUT_REQUEST,
-    user
-  };
+export function logout() {
+    cookies.unset('token');
+
+    return {
+        type: LOGOUT_SUCCESS
+    }
 }
 
-function logoutSuccess(user, payload) {
-  return {
-    type: LOGOUT_SUCCESS,
-    user,
-    payload
-  };
+function editProfileRequest(user) {
+    return {
+        type: EDIT_PROFILE_REQUEST,
+    };
 }
 
-function logoutFailure(user, error) {
-  return {
-    type: LOGOUT_FAILURE,
-    user,
-    error
-  };
+function editProfileSuccess(res) {
+    return {
+        type: EDIT_PROFILE_SUCCESS,
+        user: res.user
+    };
 }
 
-export function logout(user) {
-  return dispatch => {
-    dispatch(logoutRequest(user));
+function editProfileFailure(errors) {
+    let flattenErrors = flattenObject(errors);
+    let errorMessages = [];
 
-    return fetch('/api/logout', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user: user
-      })
-    }).then(checkStatus)
-      .then(parseJSON)
-      .then(json => dispatch(logoutSuccess(user, json)))
-      .catch((error) => {
-        const response = error.response;
-        if (response === undefined) {
-          dispatch(logoutFailure(user, error));
-        } else {
-          parseJSON(response)
-            .then((json) => {
-              error.status = response.status;
-              error.statusText = response.statusText;
-              error.message = json.message;
-              dispatch(logout(user, error));
-            });
-        }
-      });
-  };
+    for (let errorKey in flattenErrors) {
+        let key = errorKey.split('.')[0];
+        let message = _.capitalize(key + ' ' + flattenErrors[errorKey]);
+
+        errorMessages.push(message);
+    }
+
+    return {
+        type: EDIT_PROFILE_FAILURE,
+        errors: errorMessages
+    };
+}
+
+export function editProfile(email, password, nickname) {
+    return dispatch => {
+        dispatch(editProfileRequest());
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/my', {
+            method: 'put',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            },
+            body: JSON.stringify({
+                user: {
+                    email: email,
+                    password: password,
+                    display_name: nickname
+                }
+            })
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(editProfileSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(editProfileFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(editProfileFailure(json.errors));
+                });
+            }
+         });
+    };
 }

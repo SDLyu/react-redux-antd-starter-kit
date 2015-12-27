@@ -1,11 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {Link, IndexLink} from 'react-router';
+
+import {cookies} from '../../actions/utils';
 import './header.css';
 
 export default class Header extends Component {
-    onLogoutClick(event) {
-        event.preventDefault();
-        this.props.handleLogout();
+    handleLogout() {
+        const {actions} = this.props;
+        actions.logout();
     }
 
     render() {
@@ -45,9 +47,16 @@ export default class Header extends Component {
                             </ul>
 
                             <ul className="nav navbar-nav navbar-right">
-                                {user && <li className={isProfilePage ? "active" : ""}><Link to="/profile">Profile</Link></li>}
-                                {user && <li className="navbar-text"><i className="fa fa-user"/>{user}</li>}
-                                {user && <li><Link to="#" onClick={handleLogout}>Logout</Link></li>}
+                                {
+                                    user &&
+                                    <li className={isProfilePage ? "active" : ""}>
+                                        <Link to="/profile">
+                                            <i className="fa fa-user"/>&nbsp;{user.display_name || user.username}
+                                        </Link>
+                                    </li>
+                                }
+                                {user && <li><Link to="#" onClick={() => this.handleLogout()}>Logout</Link></li>}
+
                                 {!user && <li className={isRegisterPage ? 'active' : ''}><Link to="/register">Register</Link></li>}
                                 {!user && <li className={isLoginPage ? 'active' : ''}><Link to="/login">Login</Link></li>}
                             </ul>
@@ -59,11 +68,10 @@ export default class Header extends Component {
     }
 }
 
-Header.propTypes = {
-    user: PropTypes.string,
-    handleLogout: PropTypes.func.isRequired
-};
-
 Header.contextTypes = {
     location: React.PropTypes.object
+};
+
+Header.propTypes = {
+    user: PropTypes.object,
 };
