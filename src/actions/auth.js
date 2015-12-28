@@ -1,10 +1,11 @@
 import 'isomorphic-fetch';
 import _ from 'lodash';
 
+import {createDevice, clearDeviceInformation} from './device';
 import {cookies, checkStatus, parseJSON, flattenObject} from './utils';
 
-export const FETCHPROFILE_REQUEST = 'FETCHPROFILE_REQUEST';
-export const FETCHPROFILE_SUCCESS = 'FETCHPROFILE_SUCCESS';
+export const FETCH_PROFILE_REQUEST = 'FETCH_PROFILE_REQUEST';
+export const FETCH_PROFILE_SUCCESS = 'FETCH_PROFILE_SUCCESS';
 
 export const REGISTER_REQUEST = 'REGISTER_REQUEST';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
@@ -82,7 +83,7 @@ function registerFailure(errors) {
 }
 
 export function register(username, email, password) {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(registerRequest());
 
         return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/register', {
@@ -100,6 +101,7 @@ export function register(username, email, password) {
         .then(checkStatus)
         .then(parseJSON)
         .then(json => dispatch(registerSuccess(json)))
+        .then(() => dispatch(createDevice(getState())))
         .catch((errors) => {
             const response = errors.response;
 
@@ -138,7 +140,7 @@ function loginFailure(errors) {
 }
 
 export function login(username, password) {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(loginRequest());
 
         return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/login', {

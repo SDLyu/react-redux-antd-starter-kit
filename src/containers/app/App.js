@@ -7,6 +7,7 @@ import Header from '../../components/header/Header';
 import Footer from '../../components/footer/Footer';
 
 import {fetchProfile, logout} from '../../actions/auth';
+import {getCurrentDevice, clearDeviceInformation} from '../../actions/device';
 
 import './app.css';
 
@@ -18,6 +19,7 @@ class App extends Component {
     componentWillMount() {
         const {actions} = this.props;
         actions.fetchProfile();
+        actions.getCurrentDevice();
     }
 
     render() {
@@ -52,7 +54,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({fetchProfile, logout}, dispatch)};
+    return {actions: bindActionCreators({fetchProfile, getCurrentDevice, clearDeviceInformation, logout}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -12,6 +12,10 @@ export const GET_ALL_DEVICES_FAILURE = 'GET_ALL_DEVICES_FAILURE';
 export const CREATE_DEVICE_REQUEST = 'CREATE_DEVICE_REQUEST';
 export const CREATE_DEVICE_SUCCESS = 'CREATE_DEVICE_SUCCESS';
 export const CREATE_DEVICE_FAILURE = 'CREATE_DEVICE_FAILURE';
+export const DELETE_DEVICE_REQUEST = 'DELETE_DEVICE_REQUEST';
+export const DELETE_DEVICE_SUCCESS = 'DELETE_DEVICE_SUCCESS';
+export const DELETE_DEVICE_FAILURE = 'DELETE_DEVICE_FAILURE';
+export const CLEAR_DEVICE_INFORMATION = 'CLEAR_DEVICE_INFORMATION';
 
 function saveDeviceToken(token){
     if (token === undefined) return;
@@ -78,9 +82,9 @@ function getAllDevicesRequest() {
 }
 
 function getAllDevicesSuccess(deviceData) {
-    console.log(deviceData);
     return {
         type: GET_ALL_DEVICES_SUCCESS,
+        devices: deviceData.devices
     };
 }
 
@@ -92,7 +96,7 @@ function getAllDevicesFailure(errors) {
     };
 }
 
-export function getAllDevices() {
+function getAllDevices() {
     return dispatch => {
         dispatch(getAllDevicesRequest());
 
@@ -118,6 +122,26 @@ export function getAllDevices() {
                 });
             }
          });
+    };
+}
+
+
+function shouldGetAllDevices(state) {
+    const device = state.device;
+    if (!device.devices) {
+        return true;
+    }
+
+    if (device.gettingDevice) {
+        return false;
+    }
+}
+
+export function getAllDevicesIfNeeded() {
+    return (dispatch, getState) => {
+        if (shouldGetAllDevices(getState())) {
+            return dispatch(getAllDevices());
+        }
     };
 }
 
@@ -179,4 +203,60 @@ export function createDevice(stats) {
             }
          });
     };
+}
+
+function deleteDeviceRequest() {
+    return {
+        type: DELETE_DEVICE_REQUEST,
+    };
+}
+
+function deleteDeviceSuccess(token, message) {
+    return {
+        type: DELETE_DEVICE_SUCCESS,
+        token: token
+    };
+}
+
+function deleteDeviceFailure(errors) {
+    return {
+        type: DELETE_DEVICE_FAILURE,
+        errors: errors
+    };
+}
+
+export function deleteDevice(token) {
+
+    return dispatch => {
+        dispatch(deleteDeviceRequest());
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/my/devices/' + token, {
+            method: 'delete',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            }
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(deleteDeviceSuccess(token, json.message)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(deleteDeviceFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(deleteDeviceFailure(json.errors));
+                });
+            }
+         });
+    };
+}
+
+export function clearDeviceInformation() {
+    return {
+        type: CLEAR_DEVICE_INFORMATION
+    }
 }

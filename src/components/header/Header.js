@@ -8,6 +8,7 @@ export default class Header extends Component {
     handleLogout() {
         const {actions} = this.props;
         actions.logout();
+        actions.clearDeviceInformation();
     }
 
     render() {

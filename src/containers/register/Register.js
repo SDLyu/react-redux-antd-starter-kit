@@ -16,8 +16,7 @@ class Register extends Component {
     componentWillReceiveProps(nextProps) {
         let errors = nextProps.registerErrors;
         const isRegistering = nextProps.registering;
-        const user = nextProps.user
-
+        const {user} = nextProps;
 
         if (errors) {
             errors.forEach((errorMessage) => {
@@ -43,7 +42,7 @@ class Register extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        const {actions} = this.props;
+        const {actions, device} = this.props;
         const accountname = this.refs.accountname.refs.input;
         const email = this.refs.email.refs.input;
         const password = this.refs.password.refs.input;
@@ -97,9 +96,14 @@ Register.propTypes = {
 };
 
 function mapStateToProps(state) {
-    const {auth} = state;
+    const {auth, device} = state;
     if (auth) {
-        return {user: auth.user, registering: auth.registering, registerErrors: auth.registerErrors};
+        return {
+            user: auth.user,
+            device: device,
+            registering: auth.registering,
+            registerErrors: auth.registerErrors
+        };
     }
 
     return {user: null};

@@ -1,10 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {Row, Col, Panel} from 'react-bootstrap';
 import {bindActionCreators} from 'redux';
+import _ from 'lodash';
 import {connect} from 'react-redux';
-import {notification, Form, Input, Button, Icon, Upload} from 'antd';
+import {notification, Form, Input, Button, Icon, Upload, Collapse, QueueAnim, Popconfirm} from 'antd';
 
 import {editProfile} from '../../actions/auth';
+import {getAllDevicesIfNeeded, deleteDevice} from '../../actions/device';
 
 import './profile.css';
 
@@ -13,9 +15,16 @@ export default class Profile extends Component {
         super(props);
     }
 
+    componentWillMount() {
+        const {actions} = this.props;
+
+        actions.getAllDevicesIfNeeded();
+    }
+
     componentWillReceiveProps(nextProps) {
         let errors = nextProps.editProfileErrors;
-        let isEditing = nextProps.editingProfile;
+        let isEditingProfile = nextProps.isEditingProfile;
+        let isGettingAllDevices = nextProps.isGettingALLDevices;
 
         if (errors) {
             errors.forEach((errorMessage) => {
@@ -25,12 +34,12 @@ export default class Profile extends Component {
                 });
             });
         }
-        if (!isEditing && !errors){
-            notification.success({
-                message: 'Save Profile Success',
-                description: 'Welcome'
-            });
-        }
+        /* if (!isGettingAllDevices && !isEditingProfile && !errors) {
+           notification.success({
+           message: 'Save Profile Success',
+           description: 'Welcome'
+           });
+           } */
     }
 
     handleSubmit(event) {
@@ -44,14 +53,48 @@ export default class Profile extends Component {
         actions.editProfile(email.value, password.value, nickname.value);
     }
 
+    handleDeleteDevice(token) {
+        const {actions} = this.props;
+        actions.deleteDevice(token);
+    }
+
+    renderDevicesInformation() {
+        const Panel = Collapse.Panel;
+        const {devices, isGettingAllDevices, isDeletingDevice} = this.props;
+
+        if (isGettingAllDevices) {
+            return (<Icon type="loading" />);
+        }
+
+        if (!isGettingAllDevices && _.isEmpty(devices)) {
+            return (<p>No Devices</p>);
+        }
+
+        if (!isGettingAllDevices && !_.isEmpty(devices))  {
+            return (
+                <Collapse accordion>
+                    {devices.map((device, index) =>
+                        <Panel header={device.token} key={index}>
+                            <p>Device Type: {device.device_type}</p>
+                            <p>OS Version: {device.os_version}</p>
+                            <Popconfirm title="Are you sure?" onConfirm={() => this.handleDeleteDevice(device.token)}>
+                                <Button loading={isDeletingDevice}>Delete</Button>
+                            </Popconfirm>
+                        </Panel>
+                     )}
+                </Collapse>
+            );
+        }
+    }
+
     render() {
         const FormItem = Form.Item;
-        const {user, editingProfile} = this.props;
+        const {user, isEditingProfile} = this.props;
 
         return (
             <div className="container">
                 <Row>
-                    <Col sm={8} smOffset={2} md={4} mdOffset={4}>
+                    <Col sm={6} md={4} mdOffset={2}>
                         <Panel header="Edit Profile">
                             <Form horizontal onSubmit={(event) => this.handleSubmit(event)}>
                                 <FormItem label="Account：" labelCol={{span: 7}} wrapperCol={{span: 16}} required>
@@ -77,10 +120,15 @@ export default class Profile extends Component {
                                     </Upload>
                                 </FormItem>
 
-                                <Button type="primary" htmlType="submit" size="large" loading={editingProfile}>
+                                <Button type="primary" htmlType="submit" size="large" loading={isEditingProfile}>
                                     Save
                                 </Button>
                             </Form>
+                        </Panel>
+                    </Col>
+                    <Col sm={6}  md={4}>
+                        <Panel header="Edit Devices">
+                            {this.renderDevicesInformation()}
                         </Panel>
                     </Col>
                 </Row>
@@ -99,16 +147,24 @@ Profile.propTypes = {
 };
 
 function mapStateToProps(state) {
-    const {auth} = state;
+    const {auth, device} = state;
     if (auth) {
-        return {user: auth.user, editingProfile: auth.editingProfile, editProfileErrors: auth.editProfileErrors};
+        return {
+            user: auth.user,
+            devices: device.devices,
+            isEditingProfile: auth.editingProfile,
+            isGettingCurrentDevice: device.gettingCurrentDevice,
+            isGettingAllDevices: device.gettingAllDevices,
+            isDeletingDevice: device.deletingDevice,
+            editProfileErrors: auth.editProfileErrors
+        };
     }
 
     return {user: null};
 }
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({editProfile}, dispatch)};
+    return {actions: bindActionCreators({editProfile, getAllDevicesIfNeeded, deleteDevice}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
