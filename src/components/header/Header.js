@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link, IndexLink} from 'react-router';
+import {Icon} from 'antd';
 
 import {cookies} from '../../actions/utils';
 import './header.css';
@@ -36,7 +37,7 @@ export default class Header extends Component {
                             </button>
 
                             <IndexLink to="/" className="navbar-brand" activeStyle={activeColor}>
-                                Check in!
+                                <Icon type="environment" /> CheckIn!
                             </IndexLink>
                         </div>
 

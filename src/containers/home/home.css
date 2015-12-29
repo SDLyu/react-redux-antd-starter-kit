@@ -1,3 +1,23 @@
 h3 {
     height: 50px;
 }
+
+#step-container {
+    height: 105px;
+}
+
+#steps {
+    padding-bottom: 20px;
+}
+
+.ant-upload {
+    margin-right: 10px;
+}
+
+.ant-steps .ant-steps-head-inner > .ant-steps-icon {
+    line-height: 1.9;
+}
+
+.ant-steps .ant-steps-head-inner > .ant-steps-icon.anticon {
+    font-size: 16px;
+}

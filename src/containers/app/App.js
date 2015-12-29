@@ -8,6 +8,7 @@ import Footer from '../../components/footer/Footer';
 
 import {fetchProfile, logout} from '../../actions/auth';
 import {getCurrentDevice, clearDeviceInformation} from '../../actions/device';
+import {getGeoLocation} from '../../actions/geolocation';
 
 import './app.css';
 
@@ -20,6 +21,7 @@ class App extends Component {
         const {actions} = this.props;
         actions.fetchProfile();
         actions.getCurrentDevice();
+        actions.getGeoLocation();
     }
 
     render() {
@@ -54,7 +56,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({fetchProfile, getCurrentDevice, clearDeviceInformation, logout}, dispatch)};
+    return {actions: bindActionCreators({fetchProfile, logout, getCurrentDevice, clearDeviceInformation, getGeoLocation}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

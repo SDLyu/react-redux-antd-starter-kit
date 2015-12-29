@@ -17,11 +17,6 @@ export default React.createClass({
         };
     },
 
-    componentWillMount() {
-        const {actions} = this.props;
-        actions.getGeoLocation();
-    },
-
     componentDidMount() {
         const {initialZoom, lat, lon} = this.props;
         let center = new google.maps.LatLng(lat, lon);
