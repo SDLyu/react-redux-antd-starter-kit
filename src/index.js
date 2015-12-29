@@ -31,11 +31,11 @@ ReactDOM.render(
     <Router history={history}>
         <Route path="/" component={App}>
           <IndexRoute component={Home}/>
-          <Route path="/explore" component={Explore}/>
           <Route path="/register" component={Register}/>
           <Route path="/login" component={Login}/>
 
           <Route component={RestrictPage}>
+              <Route path="/explore" component={Explore}/>
               <Route path="/profile" component={Profile}/>
               <Route path="/record" component={Record}/>
               <Route path="/following" component={Following}/>

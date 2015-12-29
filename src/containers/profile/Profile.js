@@ -76,7 +76,7 @@ export default class Profile extends Component {
                         <Panel header={device.token} key={index}>
                             <p>Device Type: {device.device_type}</p>
                             <p>OS Version: {device.os_version}</p>
-                            <Popconfirm title="Are you sure?" onConfirm={() => this.handleDeleteDevice(device.token)}>
+                            <Popconfirm title="Are you sure?" okText="Yes" cancelText="No" onConfirm={() => this.handleDeleteDevice(device.token)}>
                                 <Button loading={isDeletingDevice}>Delete</Button>
                             </Popconfirm>
                         </Panel>

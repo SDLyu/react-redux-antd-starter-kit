@@ -259,9 +259,9 @@ function updateCheckInFailure(errors) {
     };
 }
 
-export function updateCheckIn(checkInId, comment) {
+export function updateCheckIn(checkInId, placeId, comment) {
     return (dispatch, getState) => {
-        dispatch(editCheckInRequest(checkInId));
+        dispatch(updateCheckInRequest(checkInId));
 
         return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/checkins/' + checkInId, {
             method: 'put',
@@ -271,6 +271,7 @@ export function updateCheckIn(checkInId, comment) {
                 'token': cookies.get('token')
             },
             body: JSON.stringify({
+                place_id: placeId,
                 comment
             })
         })

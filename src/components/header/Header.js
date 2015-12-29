@@ -22,7 +22,7 @@ export default class Header extends Component {
         const isExplorePage = pathname.indexOf('explore') > -1;
         const isFollowingPage = pathname.indexOf('following') > -1;
 
-        const activeColor = {color: '#61dafb'};
+        const activeColor = {color: '#2db7f5'};
 
         return (
             <div>
@@ -43,7 +43,7 @@ export default class Header extends Component {
 
                         <div id="navbar" className="navbar-collapse collapse">
                             <ul className="nav navbar-nav">
-                                <li className={isExplorePage ? 'active' : ''}><Link to="/explore">Explore</Link></li>
+                                {user && <li className={isExplorePage ? 'active' : ''}><Link to="/explore">Explore</Link></li>}
                                 {user && <li className={isRecordPage ? 'active' : ''}><Link to="/record">Record</Link></li>}
                                 {user && <li className={isFollowingPage ? 'active' : ''}><Link to="/following">Following</Link></li>}
                             </ul>

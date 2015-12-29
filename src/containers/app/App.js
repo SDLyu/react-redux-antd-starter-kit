@@ -10,6 +10,7 @@ import {fetchProfile, logout} from '../../actions/auth';
 import {getCurrentDevice, clearDeviceInformation} from '../../actions/device';
 import {getGeoLocation} from '../../actions/geolocation';
 
+import 'antd/lib/index.css';
 import './app.css';
 
 class App extends Component {

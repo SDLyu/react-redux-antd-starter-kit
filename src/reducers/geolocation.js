@@ -31,7 +31,7 @@ const initialState = {
     editingCheckInId: null,
     placeName: null,
     checkInId: null,
-    checkIns: null,
+    checkIns: [],
     lat: 25.047924,
     lon: 121.517065,
     creatingPlace: false,
