@@ -44,8 +44,8 @@ export default class Header extends Component {
                         <div id="navbar" className="navbar-collapse collapse">
                             <ul className="nav navbar-nav">
                                 <li className={isExplorePage ? 'active' : ''}><Link to="/explore">Explore</Link></li>
-                                <li className={isRecordPage ? 'active' : ''}><Link to="/record">Record</Link></li>
-                                <li className={isFollowingPage ? 'active' : ''}><Link to="/following">Following</Link></li>
+                                {user && <li className={isRecordPage ? 'active' : ''}><Link to="/record">Record</Link></li>}
+                                {user && <li className={isFollowingPage ? 'active' : ''}><Link to="/following">Following</Link></li>}
                             </ul>
 
                             <ul className="nav navbar-nav navbar-right">

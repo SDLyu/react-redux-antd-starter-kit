@@ -5,14 +5,32 @@ import {cookies, checkStatus, parseJSON, flattenObject} from './utils';
 
 export const BROWSER_SUPPORT = 'BROWSER_SUPPORT';
 export const BROWSER_NOT_SUPPORT = 'BROWSER_NOT_SUPPORT';
+
 export const GET_GEOLOCATION_SUCCESS = 'GET_GEOLOCATION_SUCCESS';
 export const GET_GEOLOCATION_FAILURE = 'GET_GEOLOCATION_FAILURE';
+
 export const CHECK_IN_REQUEST = 'CHECK_IN_REQUEST';
 export const CHECK_IN_SUCCESS = 'CHECK_IN_SUCCESS';
 export const CHECK_IN_FAILURE = 'CHECK_IN_FAILURE';
+
 export const CREATE_PLACE_REQUEST = 'CREATE_PLACE_REQUEST';
 export const CREATE_PLACE_SUCCESS = 'CREATE_PLACE_SUCCESS';
 export const CREATE_PLACE_FAILURE = 'CREATE_PLACE_FAILURE';
+
+export const GET_CHECK_IN_REQUEST = 'GET_CHECK_IN_REQUEST';
+export const GET_CHECK_IN_SUCCESS = 'GET_CHECK_IN_SUCCESS';
+export const GET_CHECK_IN_FAILURE = 'GET_CHECK_IN_FAILURE';
+
+export const DELETE_CHECK_IN_REQUEST = 'DELETE_CHECK_IN_REQUEST';
+export const DELETE_CHECK_IN_SUCCESS = 'DELETE_CHECK_IN_SUCCESS';
+export const DELETE_CHECK_IN_FAILURE = 'DELETE_CHECK_IN_FAILURE';
+
+export const UPDATE_CHECK_IN_REQUEST = 'UPDATE_CHECK_IN_REQUEST';
+export const UPDATE_CHECK_IN_SUCCESS = 'UPDATE_CHECK_IN_SUCCESS';
+export const UPDATE_CHECK_IN_FAILURE = 'UPDATE_CHECK_IN_FAILURE';
+
+export const EDIT_CHECK_IN = 'EDIT_CHECK_IN';
+export const CANCEL_EDIT_CHECK_IN = 'CANCEL_EDIT_CHECK_IN';
 
 function browserSupport() {
     return {
@@ -55,7 +73,7 @@ export function getGeoLocation() {
     }
 }
 
-function checkInRequest(user) {
+function checkInRequest() {
     return {
         type: CHECK_IN_REQUEST,
     };
@@ -111,7 +129,7 @@ export function checkIn(placeId, comment) {
     };
 }
 
-function createPlaceRequest(user) {
+function createPlaceRequest() {
     return {
         type: CREATE_PLACE_REQUEST,
     };
@@ -169,4 +187,169 @@ export function createPlace(name, lat, lng) {
     };
 }
 
+function getCheckInRequest() {
+    return {
+        type: GET_CHECK_IN_REQUEST,
+    };
+}
 
+function getCheckInSuccess(res) {
+    const {checkins} = res;
+
+    return {
+        type: GET_CHECK_IN_SUCCESS,
+        checkIns: checkins
+     };
+}
+
+function getCheckInFailure(errors) {
+
+    return {
+        type: GET_CHECK_IN_FAILURE,
+        errors: errors
+    };
+}
+
+export function getCheckIn(userId) {
+    return (dispatch, getState) => {
+        dispatch(getCheckInRequest());
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/users/' + userId + '/checkins', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            }
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(getCheckInSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(getCheckInFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(getCheckInFailure(json.errors));
+                });
+            }
+         });
+    };
+}
+
+function updateCheckInRequest(id) {
+    return {
+        type: UPDATE_CHECK_IN_REQUEST,
+        id
+    };
+}
+
+function updateCheckInSuccess(res) {
+    return {
+        type: UPDATE_CHECK_IN_SUCCESS,
+     };
+}
+
+function updateCheckInFailure(errors) {
+    return {
+        type: UPDATE_CHECK_IN_FAILURE,
+        errors: errors
+    };
+}
+
+export function updateCheckIn(checkInId, comment) {
+    return (dispatch, getState) => {
+        dispatch(editCheckInRequest(checkInId));
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/checkins/' + checkInId, {
+            method: 'put',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            },
+            body: JSON.stringify({
+                comment
+            })
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(updateCheckInSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(updateCecheckInFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(updateCheckInFailure(json.errors));
+                });
+            }
+         });
+    };
+}
+
+function deleteCheckInRequest(id) {
+    return {
+        type: DELETE_CHECK_IN_REQUEST,
+        id
+    };
+}
+
+function deleteCheckInSuccess(id) {
+    return {
+        type: DELETE_CHECK_IN_SUCCESS,
+        id
+     };
+}
+
+function deleteCheckInFailure(errors) {
+    return {
+        type: DELETE_CHECK_IN_FAILURE,
+        errors: errors
+    };
+}
+
+export function deleteCheckIn(checkInId) {
+    return (dispatch, getState) => {
+        dispatch(deleteCheckInRequest(checkInId));
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/checkins/' + checkInId, {
+            method: 'delete',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            }
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(deleteCheckInSuccess(checkInId)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(deleteCecheckInFailure(errors));
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(deleteCheckInFailure(json.errors));
+                });
+            }
+         });
+    };
+}
+
+export function editCheckIn(id) {
+    return {
+        type: EDIT_CHECK_IN,
+        id
+    }
+}
+
+export function cancelEditCheckIn() {
+    return {
+        type: CANCEL_EDIT_CHECK_IN,
+    }
+}

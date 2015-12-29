@@ -21,6 +21,8 @@ export const EDIT_PROFILE_REQUEST = 'EDIT_PROFILE_REQUEST';
 export const EDIT_PROFILE_SUCCESS = 'EDIT_PROFILE_SUCCESS';
 export const EDIT_PROFILE_FAILURE = 'EDIT_PROFILE_FAILURE';
 
+export const CLEAR_SAVE_SUCCESS_MESSAGE = 'CLEAR_SAVE_SUCCESS_MESSAGE';
+
 function saveToken(token){
     if (token === undefined) return;
 
@@ -243,4 +245,10 @@ export function editProfile(email, password, nickname) {
             }
          });
     };
+}
+
+export function clearSaveSuccessMessage() {
+    return {
+        type: CLEAR_SAVE_SUCCESS_MESSAGE
+    }
 }

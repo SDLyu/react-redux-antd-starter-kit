@@ -9,6 +9,7 @@ import {
     EDIT_PROFILE_REQUEST,
     EDIT_PROFILE_SUCCESS,
     EDIT_PROFILE_FAILURE,
+    CLEAR_SAVE_SUCCESS_MESSAGE
 } from '../actions/auth';
 
 const initialState = {
@@ -17,6 +18,7 @@ const initialState = {
     loggingIn: false,
     loggingOut: false,
     editingProfile: false,
+    showSaveSuccessMessage: false,
     registersErrors: null,
     loginErrors: null,
     editingProfileErrors: null,
@@ -57,7 +59,7 @@ export default function auth(state = initialState, action = {}) {
         case EDIT_PROFILE_REQUEST:
             return Object.assign({}, state, {editingProfile: true, editProfileErrors: null});
         case EDIT_PROFILE_SUCCESS:
-            return Object.assign({}, state, {user: action.user, editingProfile: false, editProfileErrors: null});
+            return Object.assign({}, state, {user: action.user, editingProfile: false, showSaveSuccessMessage: true, editProfileErrors: null});
         case EDIT_PROFILE_FAILURE:
             return {
                 ...state,

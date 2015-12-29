@@ -5,7 +5,7 @@ import _ from 'lodash';
 import {connect} from 'react-redux';
 import {notification, Form, Input, Button, Icon, Upload, Collapse, QueueAnim, Popconfirm} from 'antd';
 
-import {editProfile} from '../../actions/auth';
+import {editProfile, clearSaveSuccessMessage} from '../../actions/auth';
 import {getAllDevicesIfNeeded, deleteDevice} from '../../actions/device';
 
 import './profile.css';
@@ -22,9 +22,7 @@ export default class Profile extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let errors = nextProps.editProfileErrors;
-        let isEditingProfile = nextProps.isEditingProfile;
-        let isGettingAllDevices = nextProps.isGettingALLDevices;
+        const {actions, errors, isShowSaveSuccessMessage, isEditingProfile, isGettingAllDevices} = nextProps;
 
         if (errors) {
             errors.forEach((errorMessage) => {
@@ -34,12 +32,13 @@ export default class Profile extends Component {
                 });
             });
         }
-        /* if (!isGettingAllDevices && !isEditingProfile && !errors) {
-           notification.success({
-           message: 'Save Profile Success',
-           description: 'Welcome'
-           });
-           } */
+        if (isShowSaveSuccessMessage) {
+            notification.success({
+                message: 'Save Profile Success',
+                description: 'Welcome'
+            });
+            actions.clearSaveSuccessMessage();
+        }
     }
 
     handleSubmit(event) {
@@ -151,8 +150,10 @@ function mapStateToProps(state) {
     if (auth) {
         return {
             user: auth.user,
+            isShowSaveSuccessMessage: auth.showSaveSuccessMessage,
             devices: device.devices,
             isEditingProfile: auth.editingProfile,
+            isShowSaveSuccessMessage: auth.showSaveSuccessMessage,
             isGettingCurrentDevice: device.gettingCurrentDevice,
             isGettingAllDevices: device.gettingAllDevices,
             isDeletingDevice: device.deletingDevice,
@@ -164,7 +165,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({editProfile, getAllDevicesIfNeeded, deleteDevice}, dispatch)};
+    return {actions: bindActionCreators({editProfile, getAllDevicesIfNeeded, deleteDevice, clearSaveSuccessMessage}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
