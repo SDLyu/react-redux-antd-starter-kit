@@ -21,3 +21,7 @@ h3 {
 .ant-steps .ant-steps-head-inner > .ant-steps-icon.anticon {
     font-size: 16px;
 }
+
+.ant-upload-list.ant-upload-list-text {
+    display: inline-block;
+}

@@ -68,7 +68,7 @@ export default class Home extends Component {
                             {
                                 hasPlaceId && !hasCheckInId ? [
                                     <Form inline key="comment">
-                                        <FormItem id="comment">
+                                        <FormItem>
                                             <Input id="comment" name="comment" ref="comment" placeholder="Some Comment"/>
                                         </FormItem>
                                         <Upload>

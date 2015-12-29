@@ -22,12 +22,17 @@ export default React.createClass({
     },
 
     render() {
-        const {data} = this.props;
+        const {data, actions} = this.props;
+        const {users, followedUsers, followingUserId} = data;
 
         return (
             <Row className="users">
                 {
-                    _.map(data, (user) => {return <User {...user}/>;})
+                    _.map(users, (user) => {
+                        const isLoading = (followingUserId == user.id);
+                        const followed = _.find(followedUsers, (followedUser) => {return followedUser.id == user.id});
+                        return <User user={user} follow={actions.followUser} unfollow={actions.unfollowUser} loading={isLoading} followed={followed} />;
+                    })
                 }
             </Row>
         );

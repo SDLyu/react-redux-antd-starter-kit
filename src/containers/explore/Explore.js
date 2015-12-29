@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import {getGeoLocation} from '../../actions/geolocation';
-import {fetchAllUsers} from '../../actions/user';
+import {fetchAllUsers, followUser, unfollowUser} from '../../actions/user';
 import Googlemap from '../../components/googlemap/Googlemap';
 import Users from '../../components/users/Users';
 
@@ -27,7 +27,7 @@ export default class Explore extends Component {
                         <TabPane tab="Checkins" key="2">
                         </TabPane>
                         <TabPane tab="Users" key="3">
-                            <Users actions={actions} data={user.users}/>
+                            <Users actions={actions} data={user} />
                         </TabPane>
                     </Tabs>
                 </Col>
@@ -53,7 +53,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({getGeoLocation, fetchAllUsers}, dispatch)};
+    return {actions: bindActionCreators({getGeoLocation, fetchAllUsers, followUser, unfollowUser}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Explore);
