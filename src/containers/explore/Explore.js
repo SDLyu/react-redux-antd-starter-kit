@@ -15,7 +15,7 @@ import './explore.css';
 export default class Explore extends Component {
     render() {
         const TabPane = Tabs.TabPane;
-        const {actions, geolocation, users} = this.props;
+        const {actions, geolocation, user} = this.props;
 
         return (
             <Row>
@@ -27,7 +27,7 @@ export default class Explore extends Component {
                         <TabPane tab="Checkins" key="2">
                         </TabPane>
                         <TabPane tab="Users" key="3">
-                            <Users actions={actions}></Users>
+                            <Users actions={actions} data={user.users}/>
                         </TabPane>
                     </Tabs>
                 </Col>
@@ -47,9 +47,9 @@ Explore.propTypes = {
 };
 
 function mapStateToProps(state) {
-    const {geolocation, users} = state;
+    const {geolocation, user} = state;
 
-    return {geolocation, users};
+    return {geolocation, user};
 }
 
 function mapDispatchToProps(dispatch) {

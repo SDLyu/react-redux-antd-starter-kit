@@ -1,5 +1,9 @@
 import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import _ from 'lodash';
+import {Row} from 'react-bootstrap';
+
+import User from './User';
 
 export default React.createClass({
     propTypes: {
@@ -18,9 +22,14 @@ export default React.createClass({
     },
 
     render() {
+        const {data} = this.props;
+
         return (
-            <div className="users">
-            </div>
+            <Row className="users">
+                {
+                    _.map(data, (user) => {return <User {...user}/>;})
+                }
+            </Row>
         );
     }
 });
