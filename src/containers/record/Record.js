@@ -4,8 +4,9 @@ import {connect} from 'react-redux';
 import {Row, Col, Panel} from 'react-bootstrap';
 import {Table, Button, Icon, Popconfirm, Spin, Input} from 'antd';
 
-import {getCheckIn, deleteCheckIn, editCheckIn, cancelEditCheckIn} from '../../actions/geolocation';
+import {getCheckIn, deleteCheckIn, editCheckIn, cancelEditCheckIn, updateCheckIn} from '../../actions/geolocation';
 
+import 'antd/lib/index.css';
 import './record.css';
 
 export default class Record extends Component {
@@ -25,7 +26,7 @@ export default class Record extends Component {
 
         return (
             (editingCheckInId == record.id) ?
-            <Input defaultValue={record.comment} />:
+            <Input defaultValue={record.comment} type="text" id="comment" name="comment" ref="comment" />:
             <span>{record.comment}</span>
         );
     }
@@ -34,6 +35,7 @@ export default class Record extends Component {
         const {actions, geolocation} = this.props;
         const {deletingCheckInId, editingCheckInId} = geolocation;
 
+
         return (
             (deletingCheckInId == record.id) ?
             <Spin />:
@@ -41,16 +43,24 @@ export default class Record extends Component {
             <span>
                 <a href="#" onClick={actions.cancelEditCheckIn}>Cancel</a>
                 <span className="ant-divider"></span>
-                <a href="#">Save</a>
+                <a href="#" onClick={() => this.handleUpdateCheckIn(record)}>Save</a>
             </span>:
             <span>
                 <a href="#" onClick={() => actions.editCheckIn(record.id)}>Edit</a>
                 <span className="ant-divider"></span>
-                <Popconfirm title="Are you sure?" onConfirm={() => actions.deleteCheckIn(record.id)}>
+                <Popconfirm title="Are you sure?" okText="Yes" cancelText="No" onConfirm={() => actions.deleteCheckIn(record.id)}>
                     <a href="#">Delete</a>
                 </Popconfirm>
             </span>
         );
+    }
+
+    handleUpdateCheckIn(record) {
+        console.log(this);
+        const {actions} = this.props;
+        const comment = this.refs.comment.refs.input;
+
+        actions.updateCheckIn(record.id, record.place_id, comment.value);
     }
 
     handleDeleteCheckIn(checkInId) {
@@ -72,7 +82,7 @@ export default class Record extends Component {
         return (
             <Row>
                 <Col sm={10} smOffset={1}>
-                    <Table columns={this.columns} dataSource={geolocation.checkIns} size="small" loading={isGettingCheckIn} />
+                    <Table columns={this.columns} dataSource={geolocation.checkIns} size="small" loading={isGettingCheckIn} locale={{emptyText: 'No Data'}} />
                 </Col>
             </Row>
         );
@@ -101,7 +111,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({getCheckIn, deleteCheckIn, editCheckIn, cancelEditCheckIn}, dispatch)};
+    return {actions: bindActionCreators({getCheckIn, deleteCheckIn, editCheckIn, cancelEditCheckIn, updateCheckIn}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Record);

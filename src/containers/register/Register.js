@@ -6,6 +6,7 @@ import {notification, Form, Input, Button, Icon} from 'antd';
 
 import {register} from '../../actions/auth';
 
+import 'antd/lib/index.css';
 import './register.css';
 
 class Register extends Component {
