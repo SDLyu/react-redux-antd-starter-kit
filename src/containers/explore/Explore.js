@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Row, Col} from 'react-bootstrap';
-import {Steps, Carousel, Tabs} from 'antd';
+import _ from 'lodash';
+import {Steps, Carousel, Tabs, Spin} from 'antd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
