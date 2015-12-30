@@ -20,6 +20,7 @@ export const CREATE_PLACE_FAILURE = 'CREATE_PLACE_FAILURE';
 export const GET_NEAR_PLACES_REQUEST = 'GET_NEAR_PLACES_REQUEST';
 export const GET_NEAR_PLACES_SUCCESS = 'GET_NEAR_PLACES_SUCCESS';
 export const GET_NEAR_PLACES_FAILURE = 'GET_NEAR_PLACES_FAILURE';
+export const CLEAR_GET_NEAR_PLACES_ERRORS = 'CLEAR_GET_NEAR_PLACES_ERRORS';
 
 export const GET_CHECK_IN_REQUEST = 'GET_CHECK_IN_REQUEST';
 export const GET_CHECK_IN_SUCCESS = 'GET_CHECK_IN_SUCCESS';
@@ -241,6 +242,13 @@ export function getNearPlaces(lat, lon) {
          });
     };
 }
+
+export function clearGetNearPlacesErrors() {
+    return {
+        type: CLEAR_GET_NEAR_PLACES_ERRORS,
+    };
+}
+
 
 function getCheckInRequest() {
     return {

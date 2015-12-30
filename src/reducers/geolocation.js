@@ -11,6 +11,7 @@ import {
     GET_NEAR_PLACES_REQUEST,
     GET_NEAR_PLACES_SUCCESS,
     GET_NEAR_PLACES_FAILURE,
+    CLEAR_GET_NEAR_PLACES_ERRORS,
     CHECK_IN_REQUEST,
     CHECK_IN_SUCCESS,
     CHECK_IN_FAILURE,
@@ -66,6 +67,8 @@ export default function record(state = initialState, action = {}) {
             return Object.assign({}, state, {getNearPlacesErrors: null, nearPlaces: action.places});
         case GET_NEAR_PLACES_FAILURE:
             return {...state, getNearPlacesErrors: action.error};
+        case CLEAR_GET_NEAR_PLACES_ERRORS:
+            return {...state, getNearPlacesErrors: null};
         case CHECK_IN_REQUEST:
             return Object.assign({}, state, {checkingIn: true});
         case CHECK_IN_SUCCESS:
