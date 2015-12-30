@@ -1,4 +1,4 @@
-import {canUseDOM} from 'react/lib/ExecutionEnvironment';
+import {canUseDOM} from 'exenv';
 
 export let cookies = {
     set({ name, value = '', path = '/', domain = '', expires = '' }) {
