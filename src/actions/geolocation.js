@@ -37,6 +37,10 @@ export const UPDATE_CHECK_IN_FAILURE = 'UPDATE_CHECK_IN_FAILURE';
 export const EDIT_CHECK_IN = 'EDIT_CHECK_IN';
 export const CANCEL_EDIT_CHECK_IN = 'CANCEL_EDIT_CHECK_IN';
 
+export const GET_NEAR_CHECK_IN_REQUEST = 'GET_NEAR_CHECK_IN_REQUEST';
+export const GET_NEAR_CHECK_IN_SUCCESS = 'GET_NEAR_CHECK_IN_SUCCESS';
+export const GET_NEAR_CHECK_IN_FAILURE = 'GET_NEAR_CHECK_IN_FAILURE';
+
 function browserSupport() {
     return {
         type: BROWSER_SUPPORT,
@@ -219,7 +223,7 @@ export function getNearPlaces(lat, lon) {
         dispatch(getNearPlacesRequest());
 
         return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/places/near?lat=' + lat + '&lon=' + lon + '&radius=10', {
-            method: 'post',
+            method: 'get',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -410,6 +414,62 @@ export function editCheckIn(id) {
         type: EDIT_CHECK_IN,
         id
     }
+}
+
+function getNearCheckInRequest() {
+    return {
+        type: GET_NEAR_CHECK_IN_REQUEST,
+    };
+}
+
+function getNearCheckInSuccess(res) {
+    const {checkins} = res;
+
+    return {
+        type: GET_NEAR_CHECK_IN_SUCCESS,
+        checkins
+     };
+}
+
+function getNearCheckInFailure() {
+    return {
+        type: GET_NEAR_CHECK_IN_FAILURE,
+        error: 'Not Found',
+    };
+}
+
+export function getNearCheckIn(lat, lon) {
+    return (dispatch, getState) => {
+        dispatch(getNearCheckInRequest());
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/checkins/neighbor', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            },
+            body: JSON.stringify({
+                lat,
+                lon,
+                redius: 10
+            })
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(getNearCheckInSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(getNearCheckInFailure());
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(getNearCheckInFailure());
+                });
+            }
+         });
+    };
 }
 
 export function cancelEditCheckIn() {

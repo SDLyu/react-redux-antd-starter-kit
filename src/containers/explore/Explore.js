@@ -5,7 +5,7 @@ import {notification, Steps, Carousel, Tabs, Spin} from 'antd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {getGeoLocation, getNearPlaces, clearGetNearPlacesErrors} from '../../actions/geolocation';
+import {getGeoLocation, getNearPlaces, clearGetNearPlacesErrors, getNearCheckIn} from '../../actions/geolocation';
 import {fetchAllUsers, followUser, unfollowUser} from '../../actions/user';
 import Googlemap from '../../components/googlemap/Googlemap';
 import Users from '../../components/users/Users';
@@ -20,6 +20,7 @@ export default class Explore extends Component {
         const {lat, lon} = geolocation;
 
         actions.getNearPlaces(lat, lon);
+        actions.getNearCheckIn(lat, lon);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -48,6 +49,7 @@ export default class Explore extends Component {
                             <Googlemap actions={actions} lat={geolocation.lat} lon={geolocation.lon}/>
                         </TabPane>
                         <TabPane tab="Checkins" key="2">
+                            <Googlemap actions={actions} lat={geolocation.lat} lon={geolocation.lon}/>
                         </TabPane>
                         <TabPane tab="Users" key="3">
                             <Users actions={actions} data={user} />
@@ -76,7 +78,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({getGeoLocation, getNearPlaces, clearGetNearPlacesErrors, fetchAllUsers, followUser, unfollowUser}, dispatch)};
+    return {actions: bindActionCreators({getGeoLocation, getNearPlaces, getNearCheckIn, clearGetNearPlacesErrors, fetchAllUsers, followUser, unfollowUser}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Explore);

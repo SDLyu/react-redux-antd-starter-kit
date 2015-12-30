@@ -25,6 +25,9 @@ import {
     DELETE_CHECK_IN_SUCCESS,
     DELETE_CHECK_IN_FAILURE,
     EDIT_CHECK_IN,
+    GET_NEAR_CHECK_IN_REQUEST,
+    GET_NEAR_CHECK_IN_SUCCESS,
+    GET_NEAR_CHECK_IN_FAILURE,
     CANCEL_EDIT_CHECK_IN
 } from '../actions/geolocation';
 
@@ -37,6 +40,7 @@ const initialState = {
     checkInId: null,
     checkIns: [],
     nearPlaces: [],
+    nearCheckIns: [],
     lat: 25.047924,
     lon: 121.517065,
     creatingPlace: false,
@@ -81,7 +85,6 @@ export default function record(state = initialState, action = {}) {
             return Object.assign({}, state, {gettingCheckIn: false, checkIns: action.checkIns});
         case GET_CHECK_IN_FAILURE:
             return {...state, gettingCheckIn: false};
-
         case UPDATE_CHECK_IN_REQUEST:
             return Object.assign({}, state, {updatingCheckInId: action.id});
         case UPDATE_CHECK_IN_SUCCESS:
@@ -89,7 +92,6 @@ export default function record(state = initialState, action = {}) {
             return Object.assign({}, state, {checkIns: checkIns, updatingCheckInId: null});
         case UPDATE_CHECK_IN_FAILURE:
             return {...state, updatingCheckInId: null};
-
         case DELETE_CHECK_IN_REQUEST:
             return Object.assign({}, state, {deletingCheckInId: action.id});
         case DELETE_CHECK_IN_SUCCESS:
@@ -99,6 +101,12 @@ export default function record(state = initialState, action = {}) {
             return {...state, deletingCheckInId: null};
         case EDIT_CHECK_IN:
             return Object.assign({}, state, {editingCheckInId: action.id});
+        case GET_NEAR_CHECK_IN_REQUEST:
+            return Object.assign({}, state, {getNearCheckInErrors: null});
+        case GET_NEAR_CHECK_IN_SUCCESS:
+            return Object.assign({}, state, {getNearCheckInErrors: null, nearCheckIns: action.checkins});
+        case GET_NEAR_CHECK_IN_FAILURE:
+            return {...state, getNearCheckInErrors: action.error};
         case CANCEL_EDIT_CHECK_IN:
             return Object.assign({}, state, {editingCheckInId: null});
 
