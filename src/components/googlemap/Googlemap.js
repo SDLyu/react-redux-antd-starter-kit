@@ -5,7 +5,7 @@ import './googlemap.css';
 
 export default React.createClass({
     propTypes: {
-        
+
     },
 
     getDefaultProps() {
@@ -22,6 +22,7 @@ export default React.createClass({
         let center = new google.maps.LatLng(lat, lon);
         let mapOptions = {
             center: center,
+            title: 'You\'re here',
             zoom: initialZoom
         };
         let map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);

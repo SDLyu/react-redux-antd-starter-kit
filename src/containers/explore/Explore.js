@@ -1,11 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {Row, Col} from 'react-bootstrap';
 import _ from 'lodash';
-import {Steps, Carousel, Tabs, Spin} from 'antd';
+import {notification, Steps, Carousel, Tabs, Spin} from 'antd';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {getGeoLocation} from '../../actions/geolocation';
+import {getGeoLocation, getNearPlaces} from '../../actions/geolocation';
 import {fetchAllUsers, followUser, unfollowUser} from '../../actions/user';
 import Googlemap from '../../components/googlemap/Googlemap';
 import Users from '../../components/users/Users';
@@ -14,6 +14,25 @@ import 'antd/lib/index.css';
 import './explore.css';
 
 export default class Explore extends Component {
+
+    componentWillMount() {
+        const {actions, geolocation} = this.props;
+        const {lat, lon} = geolocation;
+
+        actions.getNearPlaces(lat, lon);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const error = nextProps.geolocation.getNearPlacesErrors;
+
+        if (error) {
+            notification.error({
+                message: 'Get Near Places Fail',
+                description: error
+            });
+        }
+    }
+
     render() {
         const TabPane = Tabs.TabPane;
         const {actions, geolocation, user} = this.props;
@@ -54,7 +73,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return {actions: bindActionCreators({getGeoLocation, fetchAllUsers, followUser, unfollowUser}, dispatch)};
+    return {actions: bindActionCreators({getGeoLocation, getNearPlaces, fetchAllUsers, followUser, unfollowUser}, dispatch)};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Explore);

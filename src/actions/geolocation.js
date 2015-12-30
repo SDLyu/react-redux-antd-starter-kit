@@ -17,6 +17,10 @@ export const CREATE_PLACE_REQUEST = 'CREATE_PLACE_REQUEST';
 export const CREATE_PLACE_SUCCESS = 'CREATE_PLACE_SUCCESS';
 export const CREATE_PLACE_FAILURE = 'CREATE_PLACE_FAILURE';
 
+export const GET_NEAR_PLACES_REQUEST = 'GET_NEAR_PLACES_REQUEST';
+export const GET_NEAR_PLACES_SUCCESS = 'GET_NEAR_PLACES_SUCCESS';
+export const GET_NEAR_PLACES_FAILURE = 'GET_NEAR_PLACES_FAILURE';
+
 export const GET_CHECK_IN_REQUEST = 'GET_CHECK_IN_REQUEST';
 export const GET_CHECK_IN_SUCCESS = 'GET_CHECK_IN_SUCCESS';
 export const GET_CHECK_IN_FAILURE = 'GET_CHECK_IN_FAILURE';
@@ -181,6 +185,57 @@ export function createPlace(name, lat, lng) {
             } else {
                 parseJSON(response).then( (json) => {
                     dispatch(createPlaceFailure(json.errors));
+                });
+            }
+         });
+    };
+}
+
+function getNearPlacesRequest() {
+    return {
+        type: GET_NEAR_PLACES_REQUEST,
+    };
+}
+
+function getNearPlacesSuccess(res) {
+    const {places} = res;
+
+    return {
+        type: GET_NEAR_PLACES_SUCCESS,
+        places
+     };
+}
+
+function getNearPlacesFailure() {
+    return {
+        type: GET_NEAR_PLACES_FAILURE,
+        error: 'Not Found',
+    };
+}
+
+export function getNearPlaces(lat, lon) {
+    return (dispatch, getState) => {
+        dispatch(getNearPlacesRequest());
+
+        return fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/places/near?lat=' + lat + '&lon=' + lon + '&radius=10', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'token': cookies.get('token')
+            }
+        })
+        .then(checkStatus)
+        .then(parseJSON)
+        .then(json => dispatch(getNearPlacesSuccess(json)))
+        .catch((errors) => {
+            const response = errors.response;
+
+            if (response === undefined) {
+                dispatch(getNearPlacesFailure());
+            } else {
+                parseJSON(response).then( (json) => {
+                    dispatch(getNearPlacesFailure());
                 });
             }
          });

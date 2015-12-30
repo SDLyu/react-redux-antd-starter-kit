@@ -8,6 +8,9 @@ import {
     CREATE_PLACE_REQUEST,
     CREATE_PLACE_SUCCESS,
     CREATE_PLACE_FAILURE,
+    GET_NEAR_PLACES_REQUEST,
+    GET_NEAR_PLACES_SUCCESS,
+    GET_NEAR_PLACES_FAILURE,
     CHECK_IN_REQUEST,
     CHECK_IN_SUCCESS,
     CHECK_IN_FAILURE,
@@ -32,11 +35,13 @@ const initialState = {
     placeName: null,
     checkInId: null,
     checkIns: [],
+    nearPlaces: [],
     lat: 25.047924,
     lon: 121.517065,
     creatingPlace: false,
     checkingIn: false,
-    gettingCheckIn: false
+    gettingCheckIn: false,
+    getNearPlacesErrors: null,
 };
 
 export default function record(state = initialState, action = {}) {
@@ -55,6 +60,12 @@ export default function record(state = initialState, action = {}) {
             return Object.assign({}, state, {creatingPlace: false, placeId: action.id, placeName: action.name});
         case CREATE_PLACE_FAILURE:
             return {...state, creatingPlace: false};
+        case GET_NEAR_PLACES_REQUEST:
+            return Object.assign({}, state, {getNearPlacesErrors: null});
+        case GET_NEAR_PLACES_SUCCESS:
+            return Object.assign({}, state, {getNearPlacesErrors: null, nearPlaces: action.places});
+        case GET_NEAR_PLACES_FAILURE:
+            return {...state, getNearPlacesErrors: action.error};
         case CHECK_IN_REQUEST:
             return Object.assign({}, state, {checkingIn: true});
         case CHECK_IN_SUCCESS:
