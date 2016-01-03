@@ -53,7 +53,7 @@ export default class Header extends Component {
                                     user &&
                                     <li className={isProfilePage ? "active" : ""}>
                                         <Link to="/profile">
-                                            {user.avatar ? <Image src={user.avatar} circle /> : <i className="fa fa-user"/>}&nbsp;{user.display_name || user.username}
+                                            {user.avatar ? <Image className="avatar" src={user.avatar} circle /> : <i className="fa fa-user"/>}&nbsp;{user.display_name || user.username}
                                         </Link>
                                     </li>
                                 }

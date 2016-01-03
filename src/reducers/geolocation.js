@@ -18,6 +18,7 @@ import {
     GET_CHECK_IN_REQUEST,
     GET_CHECK_IN_SUCCESS,
     GET_CHECK_IN_FAILURE,
+    UPDATE_PLACE,
     UPDATE_CHECK_IN_REQUEST,
     UPDATE_CHECK_IN_SUCCESS,
     UPDATE_CHECK_IN_FAILURE,
@@ -79,6 +80,15 @@ export default function record(state = initialState, action = {}) {
             return Object.assign({}, state, {checkingIn: false, checkInId: action.id});
         case CHECK_IN_FAILURE:
             return {...state, checkingIn: false};
+        case UPDATE_PLACE:
+            let checkIns = _.map(state.checkIns, (checkin) => {
+                if (checkin.place_id == action.place.id) {
+                    checkin.place = action.place.name
+                }
+
+                return checkin;
+            });
+            return Object.assign({}, state, {checkIns});
         case GET_CHECK_IN_REQUEST:
             return Object.assign({}, state, {gettingCheckIn: true});
         case GET_CHECK_IN_SUCCESS:
@@ -86,17 +96,17 @@ export default function record(state = initialState, action = {}) {
         case GET_CHECK_IN_FAILURE:
             return {...state, gettingCheckIn: false};
         case UPDATE_CHECK_IN_REQUEST:
-            return Object.assign({}, state, {updatingCheckInId: action.id});
+            return Object.assign({}, state, {editingCheckInId: action.id});
         case UPDATE_CHECK_IN_SUCCESS:
-
-            return Object.assign({}, state, {checkIns: checkIns, updatingCheckInId: null});
+            let mapCheckIns = _.map(state.checkIns, (checkIn) => {return (checkIn.id == action.id) ? action.checkIn : checkIn});
+            return Object.assign({}, state, {checkIns: mapCheckIns, editingCheckInId: null});
         case UPDATE_CHECK_IN_FAILURE:
-            return {...state, updatingCheckInId: null};
+            return {...state, editingCheckInId: null};
         case DELETE_CHECK_IN_REQUEST:
             return Object.assign({}, state, {deletingCheckInId: action.id});
         case DELETE_CHECK_IN_SUCCESS:
-            let checkIns = _.reject(state.checkIns, (checkIn) => {return checkIn.id == action.id;});
-            return Object.assign({}, state, {checkIns: checkIns, deletingCheckInId: null});
+            let rejectCheckIns = _.reject(state.checkIns, (checkIn) => {return checkIn.id == action.id;});
+            return Object.assign({}, state, {checkIns: rejectCheckIns, deletingCheckInId: null});
         case DELETE_CHECK_IN_FAILURE:
             return {...state, deletingCheckInId: null};
         case EDIT_CHECK_IN:

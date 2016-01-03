@@ -26,6 +26,8 @@ export const GET_CHECK_IN_REQUEST = 'GET_CHECK_IN_REQUEST';
 export const GET_CHECK_IN_SUCCESS = 'GET_CHECK_IN_SUCCESS';
 export const GET_CHECK_IN_FAILURE = 'GET_CHECK_IN_FAILURE';
 
+export const UPDATE_PLACE = 'UPDATE_PLACE';
+
 export const DELETE_CHECK_IN_REQUEST = 'DELETE_CHECK_IN_REQUEST';
 export const DELETE_CHECK_IN_SUCCESS = 'DELETE_CHECK_IN_SUCCESS';
 export const DELETE_CHECK_IN_FAILURE = 'DELETE_CHECK_IN_FAILURE';
@@ -105,7 +107,7 @@ function checkInFailure(errors) {
     };
 }
 
-export function checkIn(placeId, comment) {
+export function checkIn(placeId, comment, photo) {
     return (dispatch, getState) => {
         dispatch(checkInRequest());
 
@@ -118,7 +120,8 @@ export function checkIn(placeId, comment) {
             },
             body: JSON.stringify({
                 place_id: placeId,
-                comment
+                comment,
+                photo
             })
         })
         .then(checkStatus)
@@ -291,7 +294,23 @@ export function getCheckIn(userId) {
         })
         .then(checkStatus)
         .then(parseJSON)
-        .then(json => dispatch(getCheckInSuccess(json)))
+        .then(json => {
+            _.each(json.checkins, (checkin) => {
+                fetch('https://commandp-lbs-backend.herokuapp.com/api/v1/places/' + checkin.place_id, {
+                    method: 'get',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'token': cookies.get('token')
+                    }
+                })
+                .then(checkStatus)
+                .then(parseJSON)
+                .then(json => dispatch(updatePlace(json)));
+            });
+
+            dispatch(getCheckInSuccess(json));
+        })
         .catch((errors) => {
             const response = errors.response;
 
@@ -306,6 +325,14 @@ export function getCheckIn(userId) {
     };
 }
 
+function updatePlace(json) {
+    return {
+        type: UPDATE_PLACE,
+        place: json.place
+    }
+
+}
+
 function updateCheckInRequest(id) {
     return {
         type: UPDATE_CHECK_IN_REQUEST,
@@ -313,9 +340,11 @@ function updateCheckInRequest(id) {
     };
 }
 
-function updateCheckInSuccess(res) {
+function updateCheckInSuccess(res, id) {
     return {
         type: UPDATE_CHECK_IN_SUCCESS,
+        checkIn: res.checkin,
+        id
      };
 }
 
@@ -326,7 +355,7 @@ function updateCheckInFailure(errors) {
     };
 }
 
-export function updateCheckIn(checkInId, placeId, comment) {
+export function updateCheckIn(checkInId, placeId, comment, photo) {
     return (dispatch, getState) => {
         dispatch(updateCheckInRequest(checkInId));
 
@@ -339,12 +368,13 @@ export function updateCheckIn(checkInId, placeId, comment) {
             },
             body: JSON.stringify({
                 place_id: placeId,
-                comment
+                comment,
+                photo
             })
         })
         .then(checkStatus)
         .then(parseJSON)
-        .then(json => dispatch(updateCheckInSuccess(json)))
+        .then(json => dispatch(updateCheckInSuccess(json, checkInId)))
         .catch((errors) => {
             const response = errors.response;
 

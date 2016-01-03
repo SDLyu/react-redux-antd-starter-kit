@@ -7,7 +7,7 @@
     outline: none;
 }
 
-img {
+.avatar {
     height: 40px;
     width: 40px;
     position: absolute;

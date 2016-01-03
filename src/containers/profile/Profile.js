@@ -7,7 +7,6 @@ import {notification, Form, Input, Button, Icon, Upload, Collapse, QueueAnim, Po
 
 import {editProfile, clearSaveSuccessMessage} from '../../actions/auth';
 import {getAllDevicesIfNeeded, deleteDevice} from '../../actions/device';
-import Fileupload from '../../components/fileupload/Fileupload';
 
 import './profile.css';
 

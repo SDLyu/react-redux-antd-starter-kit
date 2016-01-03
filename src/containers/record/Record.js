@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Row, Col, Panel} from 'react-bootstrap';
+import {Row, Col, Panel, Image} from 'react-bootstrap';
 import {Table, Button, Icon, Popconfirm, Spin, Input} from 'antd';
 
 import {getCheckIn, deleteCheckIn, editCheckIn, cancelEditCheckIn, updateCheckIn} from '../../actions/geolocation';
@@ -15,7 +15,7 @@ export default class Record extends Component {
             {title: 'Date', dataIndex: 'created_at', key: 'date'},
             {title: 'Place', dataIndex: 'place', key: 'place'},
             {title: 'Comment', dataIndex: 'comment', key: 'comment', render: (text, record) => this.renderCommentAction(record)},
-            {title: 'Photo', dataIndex: 'photo', key: 'photo'},
+            {title: 'Photo', dataIndex: 'photo', key: 'photo', render: (text, record) => this.renderPhoto(record)},
             {title: 'Operation', dataIndex: 'operation', key: 'operation', render: (text, record) => this.renderRecordAction(record)}
         ];
     }
@@ -26,8 +26,23 @@ export default class Record extends Component {
 
         return (
             (editingCheckInId == record.id) ?
-            <Input defaultValue={record.comment} type="text" id="comment" name="comment" ref="comment" />:
+            <div>
+                <Input defaultValue={record.comment} onChange={(e) => this.handleCommentChange(e)} />
+            </div>:
             <span>{record.comment}</span>
+        );
+    }
+
+    renderPhoto(record) {
+        const {actions, geolocation} = this.props;
+        const {editingCheckInId} = geolocation;
+
+        return (
+            (editingCheckInId == record.id) ?
+            <Input type="file" ref="upload" id="upload" name="upload" onChange={(event) => this.handleUploadPhoto(event)}/>:
+            (record.photo) ?
+            <Image className="photo" src={record.photo} thumbnail />:
+            <p>No Photo</p>
         );
     }
 
@@ -56,17 +71,36 @@ export default class Record extends Component {
     }
 
     handleUpdateCheckIn(record) {
-        console.log(this);
         const {actions} = this.props;
         const comment = this.refs.comment.refs.input;
+        const photo = this.refs.photo.refs.input;
 
-        actions.updateCheckIn(record.id, record.place_id, comment.value);
+        actions.updateCheckIn(record.id, record.place_id, comment.value, photo.value);
+
+        comment.value = '';
+        photo.value = ''
     }
 
     handleDeleteCheckIn(checkInId) {
         const {actions} = this.props;
 
         action.deleteCheckIn(checkInId);
+    }
+
+    handleCommentChange(e) {
+        const comment = this.refs.comment.refs.input;
+        comment.value = e.target.value;
+    }
+
+    handleUploadPhoto(event) {
+        const photo = this.refs.photo.refs.input;
+
+        let fileReader = new FileReader();
+
+        fileReader.readAsDataURL(event.target.files[0]);
+        fileReader.onload = function(e) {
+            photo.value = e.target.result;
+        };
     }
 
     componentWillMount() {
@@ -83,6 +117,8 @@ export default class Record extends Component {
             <Row>
                 <Col sm={10} smOffset={1}>
                     <Table columns={this.columns} dataSource={geolocation.checkIns} size="small" loading={isGettingCheckIn} locale={{emptyText: 'No Data'}} />
+                    <Input className="hidden" type="text" ref="comment" id="comment" name="comment" />
+                    <Input className="hidden" type="text" ref="photo" id="photo" name="photo" />
                 </Col>
             </Row>
         );

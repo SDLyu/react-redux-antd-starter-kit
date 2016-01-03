@@ -16,8 +16,9 @@ export default class Home extends Component {
         const {actions, geolocation} = this.props;
         const {placeId} = geolocation;
         const comment = this.refs.comment.refs.input;
+        const photo = this.refs.photo.refs.input;
 
-        actions.checkIn(placeId, comment.value);
+        actions.checkIn(placeId, comment.value, photo.value);
     }
 
     handleCreatePlace() {
@@ -26,6 +27,18 @@ export default class Home extends Component {
         const name = this.refs.name.refs.input;
 
         actions.createPlace(name.value, lat, lon);
+    }
+
+    handleUploadPhoto() {
+        const upload = this.refs.upload.refs.input;
+        const photo = this.refs.photo.refs.input;
+
+        let fileReader= new FileReader();
+
+        fileReader.readAsDataURL(upload.files[0]);
+        fileReader.onload = function(e) {
+            photo.value = e.target.result;
+        };
     }
 
     render() {
@@ -71,11 +84,8 @@ export default class Home extends Component {
                                         <FormItem>
                                             <Input id="comment" name="comment" ref="comment" placeholder="Some Comment"/>
                                         </FormItem>
-                                        <Upload>
-                                            <Button type="ghost">
-                                                <Icon type="upload" /> Upload
-                                            </Button>
-                                        </Upload>
+                                        <Input type="file" ref="upload" id="upload" name="upload" onChange={() => this.handleUploadPhoto()}/>
+                                        <Input className="hidden" type="text" ref="photo" id="photo" name="photo" />
                                         <Button type="primary" onClick={() => this.handleCheckIn()} loading={isCheckingIn}>Check In</Button>
                                     </Form>
                                 ] : null
