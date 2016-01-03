@@ -211,7 +211,7 @@ function editProfileFailure(errors) {
     };
 }
 
-export function editProfile(email, password, nickname) {
+export function editProfile(email, password, nickname, avatar) {
     return dispatch => {
         dispatch(editProfileRequest());
 
@@ -224,9 +224,10 @@ export function editProfile(email, password, nickname) {
             },
             body: JSON.stringify({
                 user: {
-                    email: email,
-                    password: password,
-                    display_name: nickname
+                    email,
+                    password,
+                    display_name: nickname,
+                    avatar,
                 }
             })
         })

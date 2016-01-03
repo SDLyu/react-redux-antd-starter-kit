@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {Link, IndexLink} from 'react-router';
+import {Image} from 'react-bootstrap';
 import {Icon} from 'antd';
 
 import {cookies} from '../../actions/utils';
@@ -52,7 +53,7 @@ export default class Header extends Component {
                                     user &&
                                     <li className={isProfilePage ? "active" : ""}>
                                         <Link to="/profile">
-                                            <i className="fa fa-user"/>&nbsp;{user.display_name || user.username}
+                                            {user.avatar ? <Image src={user.avatar} circle /> : <i className="fa fa-user"/>}&nbsp;{user.display_name || user.username}
                                         </Link>
                                     </li>
                                 }

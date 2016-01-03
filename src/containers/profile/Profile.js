@@ -7,6 +7,7 @@ import {notification, Form, Input, Button, Icon, Upload, Collapse, QueueAnim, Po
 
 import {editProfile, clearSaveSuccessMessage} from '../../actions/auth';
 import {getAllDevicesIfNeeded, deleteDevice} from '../../actions/device';
+import Fileupload from '../../components/fileupload/Fileupload';
 
 import './profile.css';
 
@@ -48,8 +49,21 @@ export default class Profile extends Component {
         const email = this.refs.email.refs.input;
         const password = this.refs.password.refs.input;
         const nickname = this.refs.nickname.refs.input;
+        const avatar = this.refs.avatar.refs.input;
 
-        actions.editProfile(email.value, password.value, nickname.value);
+        actions.editProfile(email.value, password.value, nickname.value, avatar.value);
+    }
+
+    handleUploadAvatar() {
+        const upload = this.refs.upload.refs.input;
+        const avatar = this.refs.avatar.refs.input;
+
+        let fileReader= new FileReader();
+
+        fileReader.readAsDataURL(upload.files[0]);
+        fileReader.onload = function(e) {
+            avatar.value = e.target.result;
+        };
     }
 
     handleDeleteDevice(token) {
@@ -112,11 +126,8 @@ export default class Profile extends Component {
                                     <Input type="text" ref="nickname" id="nickname" name="nickname" placeholder="Nickname" />
                                 </FormItem>
                                 <FormItem label="Avatar：" labelCol={{span: 7}} wrapperCol={{span: 16}} required>
-                                    <Upload listType="picture">
-                                        <Button type="ghost">
-                                            <Icon type="upload" /> Upload Avatar
-                                        </Button>
-                                    </Upload>
+                                    <Input type="file" ref="upload" id="upload" name="upload" onChange={() => this.handleUploadAvatar()}/>
+                                    <Input className="hidden" type="text" ref="avatar" id="avatar" name="avatar" />
                                 </FormItem>
 
                                 <Button type="primary" htmlType="submit" size="large" loading={isEditingProfile}>

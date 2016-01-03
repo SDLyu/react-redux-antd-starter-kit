@@ -1,9 +1,17 @@
-  .nav .header_fa {
+.nav .header_fa {
     font-size: 1em;
     margin-right: 0.5em;
-  }
+}
 
-  .navbar-default .navbar-nav>li>a:focus {
+.navbar-default .navbar-nav>li>a:focus {
     outline: none;
-  }
+}
+
+img {
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    right: 50px;
+    top: 5px;
+}
 
